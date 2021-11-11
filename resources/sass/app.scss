@@ -6,3 +6,55 @@
 
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
+
+
+html {
+  height: 100%;
+  @include media-breakpoint-up(md) {
+    border-top: 5px solid #8ba753;
+  }
+
+  body {
+    height: 100%;
+    background: $body-bg url(/image/bg-pattern.png);
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    background-size: 100% 50%;
+
+    .validation-msg {
+      width: 100%;
+      margin-top: 0.25rem;
+      font-size: 80%;
+      color: $red;
+    }
+
+    #root {
+      height: 100%;
+    }
+
+    .form-container {
+      width: 550px;
+      padding: 15px;
+    }
+
+    .box {
+      height: 100%;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      label {
+        margin: 0;
+        font-size: 12px;
+        font-weight: bold;
+      }
+
+      .next-btn {
+        @include media-breakpoint-down(sm) {
+          width: 100%;
+        }
+      }
+    }
+  }
+}
