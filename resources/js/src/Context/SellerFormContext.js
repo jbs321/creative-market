@@ -1,33 +1,35 @@
 import createDataContext from "./createDataContext";
+import api from "../api/create-market";
 
 const SAVE_SELLER_APP = 'save-seller-app';
 const SAVE_POLE = 'save-pole';
+const VALIDATION = 'validation';
 
-const reducer = (state = {}, action) => {
-    switch (action.type) {
+const reducer = (state = {}, {type, payload}) => {
+    switch (type) {
         case SAVE_SELLER_APP:
-            return {}
+            return {...payload, serverErrors: {}};
+        case VALIDATION:
+            return {...state, serverErrors: payload};
         default:
             return state;
     }
 }
 
-const errorHandler = (er, dispatch) => {
-    dispatch({
-        type: 'add_error',
-        payload: 'Oops something went wrong! Try again later'
-    })
+const errorHandler = ({response}, dispatch) => {
+    if(response.status === 422) {
+        dispatch({type: VALIDATION, payload: response.data.errors})
+        return;
+    }
+
+    alert('Oops something went wrong!');
 }
 
-const saveSellerForm = dispatch => async (formData) => {
-    try {
-        console.log(formData);
-        // const response = await api.post('someRoute', formData);
-        // dispatch({type: SAVE_SELLER_APP, payload: response.data.token})
-        // navigate('TrackList')
-    } catch (err) {
+const saveSellerForm = dispatch => (formData) => {
+    api.post('save-seller-form', formData)
+      .catch((err) => {
         errorHandler(err, dispatch);
-    }
+    });
 }
 
 const savePole = dispatch => async (formData) => {
@@ -42,5 +44,5 @@ const savePole = dispatch => async (formData) => {
 export const {Provider, Context} = createDataContext(
     reducer,
     {saveSellerForm, savePole},
-    {}
+    {serverErrors: {}}
 );

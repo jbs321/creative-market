@@ -18,4 +18,8 @@ class User extends Model
         'category',
         'store_urls',
     ];
+
+    protected $hidden = [
+        'id',
+    ];
 }

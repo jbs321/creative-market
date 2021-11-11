@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use \App\Http\Controllers\SellerApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/seller/application', function (Request $request) {
-    return new \Illuminate\Http\JsonResponse('hahaha');
-});
+Route::post('/save-seller-form', [SellerApplicationController::class, 'store']);

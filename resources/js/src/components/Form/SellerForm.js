@@ -1,55 +1,74 @@
-import React, {useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Context as SellerFormContext} from '../../Context/SellerFormContext';
 
 const SellerForm = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [category, setCategory] = useState('');
-  const [option, setOption] = useState('');
-  const [link, setLink] = useState('');
-  const [confirm, setConfirm] = useState('');
-  const [errors, setErrors] = useState({});
-  const [store, setStore] = useState('');
+  const [first_name, setFirstName] = useState('Jacob');
+  const [last_name, setLastName] = useState('Balabanov');
+  const [category, setCategory] = useState('3D');
+  const [option, setOption] = useState('yes');
+  const [portfolio_link, setLink] = useState('http://homestead.test');
+  const [confirm, setConfirm] = useState('checked');
+  const [store_urls, setStore] = useState('sdasdas');
 
   const {
-    state,
+    state: {serverErrors},
     saveSellerForm,
   } = useContext(SellerFormContext);
 
+  const [errors, setErrors] = useState(serverErrors);
+
+  useEffect(function () {
+    setErrors(serverErrors);
+  }, [serverErrors]);
+
+  const renderErrorLabel = (error) => {
+    if (!error) {
+      return null;
+    }
+
+    if (Array.isArray(error)) {
+      return <div className="validation-msg">{error.join(', ')}</div>;
+    }
+
+    if (typeof (error) === 'string') {
+      return <div className="validation-msg">{error}</div>;
+    }
+  };
+
   const validateURL = (url) => {
-    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+    const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+      '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+      '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+      '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
 
     return pattern.test(url);
-  }
+  };
 
   const validate = () => {
     const newErrors = {};
 
-    if (!firstName || firstName === '') newErrors.firstName = 'cannot be blank!';
-    else if (firstName.length > 30) newErrors.firstName = 'name is too long!';
+    if (!first_name || first_name === '') newErrors.first_name = ['cannot be blank!'];
+    else if (first_name.length > 30) newErrors.first_name = ['name is too long!'];
 
-    if (!lastName || lastName === '') newErrors.lastName = 'cannot be blank!';
-    else if (lastName.length > 30) newErrors.lastName = 'name is too long!';
+    if (!last_name || last_name === '') newErrors.last_name = ['cannot be blank!'];
+    else if (last_name.length > 30) newErrors.last_name = ['name is too long!'];
 
-    if (!category || category === '') newErrors.category = 'select a category!';
+    if (!category || category === '') newErrors.category = ['select a category!'];
 
-    if (!link || link === '') newErrors.link = 'cannot be blank!';
-    else if (link.length > 256) newErrors.link = 'link is too long!';
-    else if (validateURL(link)) newErrors.link = 'Select a proper url!';
+    if (!portfolio_link || portfolio_link === '') newErrors.portfolio_link = ['cannot be blank!'];
+    else if (portfolio_link.length > 256) newErrors.portfolio_link = ['link is too long!'];
+    else if (!validateURL(portfolio_link)) newErrors.portfolio_link = ['Select a proper url!'];
 
-    if(!confirm) newErrors.confirm = 'Please confirm!'
+    if (!confirm) newErrors.confirm = ['Please confirm!'];
 
-    if (!option || option === '') newErrors.option = 'Please select option!';
+    if (!option || option === '') newErrors.option = ['Please select option!'];
 
-    if (option && option === 'yes' && !(store && store !== '')) newErrors.store = 'cannot be blank!';
+    if (option && option === 'yes' && !(store_urls && store_urls !== '')) newErrors.store_urls = ['cannot be blank!'];
 
     if (Object.keys(newErrors).length === 0) {
-      return true
+      return true;
     }
 
     setErrors(newErrors);
@@ -57,14 +76,15 @@ const SellerForm = () => {
   };
 
   const onSubmit = () => {
-    // validate();
-    saveSellerForm({
-      firstName: firstName.target.value,
-      lastName:lastName.target.value,
-      category:category.target.value,
-      link:link.target.value,
-      store:store.target.value,
-    })
+    if (validate()) {
+      saveSellerForm({
+        first_name,
+        last_name,
+        category,
+        portfolio_link,
+        store_urls
+      });
+    }
   };
 
   return <div className="card form-container">
@@ -84,16 +104,18 @@ const SellerForm = () => {
       <div className="row">
         <div className="col-6">
           <div className="form-group">
-            <label htmlFor="firstName">First Name</label>
-            <input type="text" defaultValue={firstName} onChange={setFirstName} className="form-control" id="firstName"/>
-            {errors.firstName ? <div className="validation-msg">{errors.firstName}</div> : ''}
+            <label htmlFor="first_name">First Name</label>
+            <input type="text" defaultValue={first_name} onChange={(e) => setFirstName(e.target.value)}
+                   className="form-control" id="first_name"/>
+            {renderErrorLabel(errors.first_name)}
           </div>
         </div>
         <div className="col-6">
           <div className="form-group">
-            <label htmlFor="lastName">Last Name</label>
-            <input type="text" defaultValue={lastName} onChange={setLastName} className="form-control" id="lastName"/>
-            {errors.lastName ? <div className="validation-msg">{errors.lastName}</div> : ''}
+            <label>Last Name</label>
+            <input type="text" defaultValue={last_name} onChange={(e) => setLastName(e.target.value)}
+                   className="form-control" id="last_name"/>
+            {renderErrorLabel(errors.last_name)}
           </div>
         </div>
       </div>
@@ -101,18 +123,22 @@ const SellerForm = () => {
       <div className="row">
         <div className="col-12">
           <div className="form-group">
-            <label htmlFor="link">Portfolio Link</label>
-            <input type="text" defaultValue={link} onChange={setLink} placeholder={'mysite.com'} className="form-control" id="link"/>
-            {errors.link ? <div className="validation-msg">{errors.link}</div> : ''}
+            <label>Portfolio Link</label>
+            <input type="text"
+                   defaultValue={portfolio_link}
+                   onChange={(e) => setLink(e.target.value)}
+                   placeholder={'mysite.com'}
+                   className="form-control"/>
+            {renderErrorLabel(errors.portfolio_link)}
 
 
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" defaultValue={confirm} id="confirm" onChange={setConfirm}/>
-              <label className="form-check-label" htmlFor="confirm">
+              <input className="form-check-input" type="checkbox" checked={confirm} id="confirm" onChange={setConfirm}/>
+              <label className="form-check-label">
                 Yes, I confirm that the content I submit is authored by me.
               </label>
             </div>
-            {errors.confirm ? <div className="validation-msg">{errors.confirm}</div> : ''}
+            {renderErrorLabel(errors.confirm)}
           </div>
         </div>
       </div>
@@ -121,9 +147,9 @@ const SellerForm = () => {
       <div className="row">
         <div className="col-12">
           <div className="form-group">
-            <label htmlFor="exampleFormControlSelect1">Your Shop Category</label>
-            <select onChange={setCategory} defaultValue={category} className="form-control"
-                    id="exampleFormControlSelect1">
+            <label htmlFor="category">Your Shop Category</label>
+            <select onChange={(e) => setCategory(e.target.value)} defaultValue={category} className="form-control"
+                    id="category">
               <option>Select Category</option>
               <option>Graphics</option>
               <option>FontsTemplates</option>
@@ -131,7 +157,7 @@ const SellerForm = () => {
               <option>PhotosWeb Themes</option>
               <option>3D</option>
             </select>
-            {errors.category ? <div className="validation-msg">{errors.category}</div> : ''}
+            {renderErrorLabel(errors.category)}
           </div>
         </div>
       </div>
@@ -144,17 +170,18 @@ const SellerForm = () => {
           </div>
           <div className="form-check form-group">
             <input onChange={() => setOption('no')} className="form-check-input" type="radio" name="options"/>
-            <label className="form-check-label" htmlFor="option2"> No </label>
-            {errors.option ? <div className="validation-msg">{errors.option}</div> : ''}
+            <label className="form-check-label"> No </label>
+            {renderErrorLabel(errors.option)}
           </div>
         </div>
       </div>
       {option === 'yes' ? <div className="row">
         <div className="col-12">
           <div className="form-group">
-            <label htmlFor="stores">Online stores I sell on today</label>
-            <textarea defaultValue={store} onChange={setStore} style={styles.textArea} className="form-control" id="stores" rows="3" />
-            {errors.store ? <div className="validation-msg">{errors.store}</div> : ''}
+            <label>Online stores I sell on today</label>
+            <textarea defaultValue={store_urls} onChange={(e) => setStore(e.target.value)} style={styles.textArea}
+                      className="form-control" rows="3"/>
+            {renderErrorLabel(errors.store_urls)}
           </div>
         </div>
       </div> : ''}
