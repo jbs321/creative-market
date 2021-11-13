@@ -1,14 +1,14 @@
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Context as SellerFormContext} from '../../Context/SellerFormContext';
 
 const SellerForm = () => {
-  const [first_name, setFirstName] = useState('Jacob');
-  const [last_name, setLastName] = useState('Balabanov');
-  const [category, setCategory] = useState('3D');
-  const [option, setOption] = useState('yes');
-  const [portfolio_link, setLink] = useState('http://homestead.test');
-  const [confirm, setConfirm] = useState('checked');
-  const [store_urls, setStore] = useState('sdasdas');
+  const [first_name, setFirstName] = useState('');
+  const [last_name, setLastName] = useState('');
+  const [category, setCategory] = useState('');
+  const [option, setOption] = useState('');
+  const [portfolio_link, setLink] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [store_urls, setStore] = useState('');
 
   const {
     state: {serverErrors},
@@ -72,7 +72,7 @@ const SellerForm = () => {
     }
 
     setErrors(newErrors);
-    return true;
+    return false;
   };
 
   const onSubmit = () => {
@@ -127,13 +127,16 @@ const SellerForm = () => {
             <input type="text"
                    defaultValue={portfolio_link}
                    onChange={(e) => setLink(e.target.value)}
-                   placeholder={'mysite.com'}
+                   placeholder={'http://mysite.com'}
                    className="form-control"/>
             {renderErrorLabel(errors.portfolio_link)}
 
 
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" checked={confirm} id="confirm" onChange={setConfirm}/>
+              <input className="form-check-input" type="checkbox" checked={confirm} id="confirm" onChange={(e) => {
+                setConfirm(e.target.checked);
+              }
+              }/>
               <label className="form-check-label">
                 Yes, I confirm that the content I submit is authored by me.
               </label>
@@ -179,7 +182,8 @@ const SellerForm = () => {
         <div className="col-12">
           <div className="form-group">
             <label>Online stores I sell on today</label>
-            <textarea defaultValue={store_urls} onChange={(e) => setStore(e.target.value)} style={styles.textArea}
+            <textarea defaultValue={store_urls} onChange={(e) => setStore(e.target.value)
+            } style={styles.textArea}
                       className="form-control" rows="3"/>
             {renderErrorLabel(errors.store_urls)}
           </div>

@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import SellerForm from './src/components/Form/SellerForm';
 import {Provider as SellerFormContext} from './src/Context/SellerFormContext';
+import FormHandler from './src/components/Form/FormHandler';
 
 ReactDOM.render(
   <div className={'box'}>
     <SellerFormContext>
-      <SellerForm/>
+      <FormHandler/>
     </SellerFormContext>
   </div>,
   document.querySelector('#root')
