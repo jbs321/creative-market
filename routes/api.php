@@ -15,3 +15,5 @@ use \App\Http\Controllers\SellerApplicationController;
 */
 
 Route::post('/save-seller-form', [SellerApplicationController::class, 'store']);
+Route::post('/save-pole', [SellerApplicationController::class, 'savePole']);
+Route::get('/pole/{poleName}', [SellerApplicationController::class, 'pole']);

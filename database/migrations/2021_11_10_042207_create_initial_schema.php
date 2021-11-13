@@ -10,22 +10,25 @@ class CreateInitialSchema extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('portfolio_link')->unique();
             $table->string('category');
-            $table->jsonb('store_urls');
+            $table->string('store_urls')->nullable();
             $table->timestamps();
         });
 
         Schema::create('poles', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('name');
             $table->timestamps();
         });
 
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('question');
             $table->timestamps();
         });
@@ -44,6 +47,7 @@ class CreateInitialSchema extends Migration
 
         Schema::create('options', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('option');
             $table->timestamps();
         });
